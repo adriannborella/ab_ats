@@ -1,0 +1,34 @@
+# Resume-Matcher 1.4.0 — revisión de CVs tipo ATS/RRHH, local, operado con Claude Code.
+#
+# Modo "Coding agent": la app NO llama a ningún LLM ni necesita API keys.
+# La IA (leer el CV, extraer keywords, adaptar bullets) la hace Claude Code vía ./rmx,
+# y la app valida, puntúa, hace el ATS check y renderiza el PDF localmente. Ver GUIA.md.
+#
+# Puerto publicado únicamente en 127.0.0.1.
+
+name: ab_ats
+
+services:
+  resume-matcher:
+    image: ghcr.io/srbhr/resume-matcher:1.4.0
+    container_name: resume-matcher   # nombre fijo: lo usa ./rmx
+    restart: unless-stopped
+    environment:
+      # Provider por env (si guardás otro en Settings de la UI, ése tiene prioridad).
+      LLM_PROVIDER: agent
+      # Playwright genera los PDF contra el frontend INTERNO del contenedor.
+      FRONTEND_BASE_URL: http://localhost:3000
+      LOG_LEVEL: INFO
+      LOG_LLM: WARNING
+      # No consultar el registry remoto de precios de LiteLLM (la imagen ya lo trae en True).
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - rm-data:/app/backend/data   # base de datos (CVs, ofertas, tracker)
+      - ./cv:/input/cv:ro           # CV original (PDF/DOCX)          -> /input/cv/...
+      - ./jobs:/input/jobs:ro       # ofertas (.md/.txt) y jobs/.work -> /input/jobs/...
+      - ./output:/output            # PDFs exportados                  -> /output/...
+
+volumes:
+  rm-data:

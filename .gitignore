@@ -1,0 +1,18 @@
+# Datos personales: no versionar ni compartir.
+# Se versiona sólo la carpeta (.gitkeep) para que exista al clonar; si no,
+# Docker la crea como root al montarla y el contenedor no puede escribir en output/.
+cv/*
+!cv/.gitkeep
+jobs/*
+!jobs/.gitkeep
+output/*
+!output/.gitkeep
+backups/
+
+# Claude Code: configuración local de cada dev
+.claude/settings.local.json
+
+# Varios
+.env
+*.swp
+.DS_Store

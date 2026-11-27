@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Atajo al CLI de Resume-Matcher dentro del contenedor (modo agent).
+#   ./rmx --help                      lista de herramientas
+#   ./rmx <tool> --help               argumentos de una herramienta
+#   ./rmx get_status
+#   ./rmx get_resume resume_id=<id>
+#   ./rmx update_resume - < jobs/.work/archivo.json    (JSON completo por stdin)
+# Las rutas de archivos se leen DENTRO del contenedor: /input/cv, /input/jobs, /output.
+set -euo pipefail
+CONTAINER="${RM_CONTAINER:-resume-matcher}"
+exec docker exec -i -w /app/backend "$CONTAINER" python -m app.mcp_server.cli "$@"
